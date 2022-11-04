@@ -72,6 +72,7 @@ public abstract class GeoPhotosRoomDatabase : RoomDatabase() {
 
         fun getJunkData(): Map<String,LatLng>{
             val locationList:MutableMap<String,LatLng> = HashMap<String,LatLng>()
+            /*
             locationList["Montgomery"] = LatLng(32.377716,-86.300568)
             locationList["Juneau"] = LatLng(58.301598,-134.420212)
             locationList["Phoenix"] = LatLng(33.448143,-112.096962)
@@ -122,7 +123,7 @@ public abstract class GeoPhotosRoomDatabase : RoomDatabase() {
             locationList["Charleston"] = LatLng(38.336246,-81.612328)
             locationList["Madison"] = LatLng(43.074684,-89.384445)
             locationList["Cheyenne"] = LatLng(41.140259,-104.820236)
-
+            */
             return locationList
         }
     }

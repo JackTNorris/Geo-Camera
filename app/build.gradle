@@ -30,6 +30,7 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+        freeCompilerArgs = ['-Xjvm-default=compatibility']
     }
     buildFeatures {
         viewBinding true
@@ -77,4 +78,5 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     androidTestImplementation "androidx.test.ext:junit:$rootProject.androidxJunitVersion"
+    implementation 'com.google.android.gms:play-services-location:21.0.0'
 }

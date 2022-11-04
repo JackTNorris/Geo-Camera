@@ -1,5 +1,6 @@
 package edu.uark.ahnelson.assignment3solution.MainActivity
 
+import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
@@ -8,6 +9,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import edu.uark.ahnelson.assignment3solution.R
@@ -29,6 +33,7 @@ class OpenStreetMapFragment : Fragment(), Marker.OnMarkerClickListener {
     private lateinit var mLocationOverlay:MyLocationNewOverlay
     private lateinit var mCompassOverlay:CompassOverlay
     private var curLocation = GeoPoint(34.74,-92.28)
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
