@@ -19,16 +19,14 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationServices
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.osmdroid.config.Configuration.*
 
 
 import edu.uark.ahnelson.assignment3solution.GeoPhotoApplication
 import edu.uark.ahnelson.assignment3solution.R
-import edu.uark.ahnelson.assignment3solution.Util.LocationUtilCallback
-import edu.uark.ahnelson.assignment3solution.Util.createLocationCallback
-import edu.uark.ahnelson.assignment3solution.Util.createLocationRequest
-import edu.uark.ahnelson.assignment3solution.Util.replaceFragmentInActivity
+import edu.uark.ahnelson.assignment3solution.Util.*
 import org.osmdroid.util.GeoPoint
 import java.io.File
 import java.text.SimpleDateFormat
@@ -37,7 +35,9 @@ import java.util.*
 class MapsActivity : AppCompatActivity() {
 
     private lateinit var mapsFragment: OpenStreetMapFragment
+
     var currentPhotoPath:String = ""
+    var currentPhotoURI:String = ""
 
     //Boolean to keep track of whether permissions have been granted
     private var locationPermissionEnabled:Boolean = false
@@ -56,10 +56,8 @@ class MapsActivity : AppCompatActivity() {
         if (result.resultCode == Activity.RESULT_CANCELED) {
             Toast.makeText(applicationContext, "No picture taken", Toast.LENGTH_LONG)
         }else{
-            /*
             Log.d("MainActivity","Picture Taken at location $currentPhotoPath")
-            setPic()
-             */
+            // setPic()
         }
     }
 
@@ -102,6 +100,8 @@ class MapsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
 
+        locationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        getLastLocation(this,locationProviderClient,locationUtilCallback)
 
         findViewById<FloatingActionButton>(R.id.floatingActionButton).setOnClickListener{
             takeNewPhoto()
@@ -142,6 +142,7 @@ class MapsActivity : AppCompatActivity() {
         }
     }
 
+
     private fun takeNewPhoto(){
         //mapsFragment.clearMarkers()
         // mapsFragment.clearOneMarker(25)
@@ -153,22 +154,6 @@ class MapsActivity : AppCompatActivity() {
             val photoUri = FileProvider.getUriForFile(this,"edu.uark.ahnelson.assignment3solution.fileprovider",myFile)
             picIntent.putExtra(MediaStore.EXTRA_OUTPUT,photoUri)
             takePictureResultLauncher.launch(picIntent)
-        }
-    }
-
-    private val locationUtilCallback = object:LocationUtilCallback{
-        //If locationUtil request fails because of permission issues
-        //Ask for permissions
-        override fun requestPermissionCallback() {
-            locationPermissionRequest.launch(arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION))
-        }
-        //If locationUtil returns a Location object
-        //Populate the current location and log
-        override fun locationUpdatedCallback(location: Location) {
-            mCurrentLocation = location
-            Log.d("MainActivity","Location is [Lat: ${location.latitude}, Long: ${location.longitude}]")
         }
     }
 
@@ -201,6 +186,22 @@ class MapsActivity : AppCompatActivity() {
         }
     }
 
+    private val locationUtilCallback = object:LocationUtilCallback{
+        //If locationUtil request fails because of permission issues
+        //Ask for permissions
+        override fun requestPermissionCallback() {
+            locationPermissionRequest.launch(arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION))
+        }
+        //If locationUtil returns a Location object
+        //Populate the current location and log
+        override fun locationUpdatedCallback(location: Location) {
+            mCurrentLocation = location
+            Log.d("MainActivity","Location is [Lat: ${location.latitude}, Long: ${location.longitude}]")
+        }
+    }
+
     private fun startLocationRequests(){
         //If we aren't currently getting location updates
         if(!locationRequestsEnabled){
@@ -209,5 +210,21 @@ class MapsActivity : AppCompatActivity() {
             //and request location updates, setting the boolean equal to whether this was successful
             locationRequestsEnabled = createLocationRequest(this,locationProviderClient,mLocationCallback)
         }
+    }
+
+    override fun onStop(){
+        super.onStop()
+        //if we are currently getting updates
+        if(locationRequestsEnabled){
+            //stop getting updates
+            locationRequestsEnabled = false
+            stopLocationUpdates(locationProviderClient,mLocationCallback)
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        //Start location updates
+        startLocationRequests()
     }
 }
