@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import edu.uark.ahnelson.assignment3solution.MainActivity.MapsViewModel
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 
 class ViewImageActivity: AppCompatActivity() {
     lateinit var imageView: ImageView
@@ -34,7 +35,9 @@ class ViewImageActivity: AppCompatActivity() {
             val geoPhoto = mapsViewModel.getGeoPhoto(id!!)
             findViewById<TextView>(R.id.description).setText(if (geoPhoto.extraInfo != null) geoPhoto.extraInfo else "No description" )
             findViewById<TextView>(R.id.location_taken).setText("Latitude: " + geoPhoto.latitude + " | Longitude: " + geoPhoto.longitude)
-            findViewById<TextView>(R.id.time_taken).setText( "hello lad" )
+            val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm:ss.SSS")
+            val dateString = simpleDateFormat.format(geoPhoto.datetime)
+            findViewById<TextView>(R.id.time_taken).setText(String.format("%s", dateString))
             currentPhotoPath = geoPhoto.filename!!
             setPic()
         }

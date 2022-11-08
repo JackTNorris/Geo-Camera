@@ -151,8 +151,6 @@ class MapsActivity : AppCompatActivity() {
 
 
     private fun takeNewPhoto(){
-        //mapsFragment.clearMarkers()
-        // mapsFragment.clearOneMarker(25)
         val picIntent = Intent().setAction(MediaStore.ACTION_IMAGE_CAPTURE)
         if (picIntent.resolveActivity(packageManager) != null){
             val filepath: String = createFilePath()
@@ -205,7 +203,7 @@ class MapsActivity : AppCompatActivity() {
         //Populate the current location and log
         override fun locationUpdatedCallback(location: Location) {
             mCurrentLocation = location
-            Log.d("MainActivity","Location is [Lat: ${location.latitude}, Long: ${location.longitude}]")
+            // Log.d("MainActivity","Location is [Lat: ${location.latitude}, Long: ${location.longitude}]")
         }
     }
 
@@ -238,7 +236,7 @@ class MapsActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intentData: Intent?) {
         super.onActivityResult(requestCode, resultCode, intentData)
-
+        Log.d("Jack", "In on resume")
         // handle intent passed back after creation of new item
         if (requestCode == addDescriptionRequestCode && resultCode == Activity.RESULT_OK) {
             // extract necessary items from intent
@@ -248,6 +246,7 @@ class MapsActivity : AppCompatActivity() {
             val dateTime =  System.currentTimeMillis().toDouble()
             // creating geo phot and adding to db
             val geoPhoto = GeoPhoto(null, currentPhotoPath, lat, long, dateTime, description)
+            Log.d("Jack", geoPhoto.toString())
             mapsViewModel.insert(geoPhoto)
         }
     }
