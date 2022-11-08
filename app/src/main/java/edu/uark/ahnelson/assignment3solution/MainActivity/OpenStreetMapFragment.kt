@@ -153,6 +153,7 @@ class OpenStreetMapFragment : Fragment(), Marker.OnMarkerClickListener {
         }
     }
 
+    // pass the id to the view image activity on marker click
     override fun onMarkerClick(marker: Marker?, mapView: MapView?): Boolean {
         marker?.id?.let { Log.d("OpenStreetMapFragment", it) }
         val intent = Intent(activity, ViewImageActivity::class.java)

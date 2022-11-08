@@ -1,6 +1,5 @@
 package edu.uark.ahnelson.assignment3solution
 
-import android.content.ClipDescription
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.widget.ImageView
@@ -8,18 +7,15 @@ import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import edu.uark.ahnelson.assignment3solution.MainActivity.MapsViewModel
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 
+
+// activity for viewing an image
 class ViewImageActivity: AppCompatActivity() {
     lateinit var imageView: ImageView
     lateinit var currentPhotoPath: String
-    lateinit var longitude: String
-    lateinit var latitude: String
-    lateinit var timestamp: String
-    lateinit var description: String
 
 
     private val mapsViewModel: MapsViewModel by viewModels {
@@ -32,6 +28,7 @@ class ViewImageActivity: AppCompatActivity() {
         imageView = findViewById(R.id.ivImageView)
         val id: Int? = intent.extras?.getString(ViewImageActivity.EXTRA_ID)?.toInt()
         lifecycleScope.launch {
+            // asynchronously fetch geophoto from database and initialize view with values
             val geoPhoto = mapsViewModel.getGeoPhoto(id!!)
             findViewById<TextView>(R.id.description).setText(if (geoPhoto.extraInfo != null) geoPhoto.extraInfo else "No description" )
             findViewById<TextView>(R.id.location_taken).setText("Latitude: " + geoPhoto.latitude + " | Longitude: " + geoPhoto.longitude)
@@ -43,6 +40,7 @@ class ViewImageActivity: AppCompatActivity() {
         }
     }
 
+    // sets the picture in the view using the passed file reference
     private fun setPic() {
         // Get the dimensions of the View
         val targetW: Int = imageView.getWidth()

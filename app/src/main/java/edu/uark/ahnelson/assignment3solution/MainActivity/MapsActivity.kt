@@ -41,7 +41,6 @@ class MapsActivity : AppCompatActivity() {
     private lateinit var mapsFragment: OpenStreetMapFragment
 
     var currentPhotoPath:String = ""
-    var currentPhotoURI:String = ""
 
     //Boolean to keep track of whether permissions have been granted
     private var locationPermissionEnabled:Boolean = false
@@ -60,6 +59,7 @@ class MapsActivity : AppCompatActivity() {
         if (result.resultCode == Activity.RESULT_CANCELED) {
             Toast.makeText(applicationContext, "No picture taken", Toast.LENGTH_LONG)
         }else{
+            // go to add description page after taking a picture and accepting it
             Log.d("MainActivity","Picture Taken at location $currentPhotoPath")
             val intent = Intent(this@MapsActivity, AddDescriptionActivity::class.java)
             startActivityForResult(intent, addDescriptionRequestCode)
@@ -76,6 +76,7 @@ class MapsActivity : AppCompatActivity() {
             }
         }
 
+    // request location permissions
     private val locationPermissionRequest = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -150,11 +151,13 @@ class MapsActivity : AppCompatActivity() {
     }
 
 
+    // options to be performed when taking a new photo
     private fun takeNewPhoto(){
         val picIntent = Intent().setAction(MediaStore.ACTION_IMAGE_CAPTURE)
         if (picIntent.resolveActivity(packageManager) != null){
             val filepath: String = createFilePath()
             val myFile: File = File(filepath)
+            // setting the file path of the picture taken for later reference
             currentPhotoPath = filepath
             val photoUri = FileProvider.getUriForFile(this,"edu.uark.ahnelson.assignment3solution.fileprovider",myFile)
             picIntent.putExtra(MediaStore.EXTRA_OUTPUT,photoUri)
@@ -162,6 +165,7 @@ class MapsActivity : AppCompatActivity() {
         }
     }
 
+    // creates a file path for the image taken
     private fun createFilePath(): String {
         // Create an image file name
         val timeStamp =
@@ -177,6 +181,7 @@ class MapsActivity : AppCompatActivity() {
         return image.absolutePath
     }
 
+    // makes sure we have permission to access the user's location
     private fun checkForLocationPermission(){
         when {
             ContextCompat.checkSelfPermission(
@@ -191,6 +196,7 @@ class MapsActivity : AppCompatActivity() {
         }
     }
 
+    // function called when the location service gathers a new location
     private val locationUtilCallback = object:LocationUtilCallback{
         //If locationUtil request fails because of permission issues
         //Ask for permissions
@@ -207,6 +213,7 @@ class MapsActivity : AppCompatActivity() {
         }
     }
 
+    // starts collecting location data
     private fun startLocationRequests(){
         //If we aren't currently getting location updates
         if(!locationRequestsEnabled){
@@ -217,6 +224,7 @@ class MapsActivity : AppCompatActivity() {
         }
     }
 
+    // terminates location service
     override fun onStop(){
         super.onStop()
         //if we are currently getting updates
@@ -227,6 +235,7 @@ class MapsActivity : AppCompatActivity() {
         }
     }
 
+    // starts location service
     override fun onStart() {
         super.onStart()
         //Start location updates
@@ -234,19 +243,18 @@ class MapsActivity : AppCompatActivity() {
     }
 
 
+    // for receiving data from the add description screen
     override fun onActivityResult(requestCode: Int, resultCode: Int, intentData: Intent?) {
         super.onActivityResult(requestCode, resultCode, intentData)
-        Log.d("Jack", "In on resume")
         // handle intent passed back after creation of new item
         if (requestCode == addDescriptionRequestCode && resultCode == Activity.RESULT_OK) {
-            // extract necessary items from intent
+            // extract necessary items from intent (in particular, the description
             val description = intentData?.getStringExtra(AddDescriptionActivity.EXTRA_DESCRIPTION)
             val long = mCurrentLocation.longitude
             val lat = mCurrentLocation.latitude
             val dateTime =  System.currentTimeMillis().toDouble()
-            // creating geo phot and adding to db
+            // creating geo photo and adding to db
             val geoPhoto = GeoPhoto(null, currentPhotoPath, lat, long, dateTime, description)
-            Log.d("Jack", geoPhoto.toString())
             mapsViewModel.insert(geoPhoto)
         }
     }
