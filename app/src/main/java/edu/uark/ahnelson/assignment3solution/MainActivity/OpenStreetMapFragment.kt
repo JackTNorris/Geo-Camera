@@ -1,6 +1,7 @@
 package edu.uark.ahnelson.assignment3solution.MainActivity
 
 import android.app.Activity
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
@@ -14,7 +15,9 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import edu.uark.ahnelson.assignment3solution.AddDescriptionActivity
 import edu.uark.ahnelson.assignment3solution.R
+import edu.uark.ahnelson.assignment3solution.ViewImageActivity
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
@@ -152,6 +155,9 @@ class OpenStreetMapFragment : Fragment(), Marker.OnMarkerClickListener {
 
     override fun onMarkerClick(marker: Marker?, mapView: MapView?): Boolean {
         marker?.id?.let { Log.d("OpenStreetMapFragment", it) }
+        val intent = Intent(activity, ViewImageActivity::class.java)
+        intent.putExtra(ViewImageActivity.EXTRA_ID, marker?.id?.toString())
+        startActivity(intent)
 
         return true
     }

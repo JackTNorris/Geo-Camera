@@ -34,7 +34,13 @@
         <activity
             android:name=".ViewImageActivity"
             android:exported="true"
-            android:label="@string/title_activity_maps">
+            android:label="View Image Activity">
+        </activity>
+
+        <activity
+            android:name=".AddDescriptionActivity"
+            android:exported="true"
+            android:label="Add Description Activity">
         </activity>
 
         <provider

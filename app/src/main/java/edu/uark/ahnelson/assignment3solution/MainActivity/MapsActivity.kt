@@ -21,11 +21,13 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import edu.uark.ahnelson.assignment3solution.AddDescriptionActivity
 import org.osmdroid.config.Configuration.*
 
 
 import edu.uark.ahnelson.assignment3solution.GeoPhotoApplication
 import edu.uark.ahnelson.assignment3solution.R
+import edu.uark.ahnelson.assignment3solution.Repository.GeoPhoto
 import edu.uark.ahnelson.assignment3solution.Util.*
 import org.osmdroid.util.GeoPoint
 import java.io.File
@@ -33,6 +35,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class MapsActivity : AppCompatActivity() {
+
+    private val addDescriptionRequestCode = 1
 
     private lateinit var mapsFragment: OpenStreetMapFragment
 
@@ -57,6 +61,8 @@ class MapsActivity : AppCompatActivity() {
             Toast.makeText(applicationContext, "No picture taken", Toast.LENGTH_LONG)
         }else{
             Log.d("MainActivity","Picture Taken at location $currentPhotoPath")
+            val intent = Intent(this@MapsActivity, AddDescriptionActivity::class.java)
+            startActivityForResult(intent, addDescriptionRequestCode)
             // setPic()
         }
     }
@@ -118,6 +124,7 @@ class MapsActivity : AppCompatActivity() {
                     as OpenStreetMapFragment? ?:OpenStreetMapFragment.newInstance().also{
                         replaceFragmentInActivity(it,R.id.fragmentContainerView)
         }
+
 
         //Begin observing data changes
         mapsViewModel.allGeoPhoto.observe(this){
@@ -227,4 +234,22 @@ class MapsActivity : AppCompatActivity() {
         //Start location updates
         startLocationRequests()
     }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intentData: Intent?) {
+        super.onActivityResult(requestCode, resultCode, intentData)
+
+        // handle intent passed back after creation of new item
+        if (requestCode == addDescriptionRequestCode && resultCode == Activity.RESULT_OK) {
+            // extract necessary items from intent
+            val description = intentData?.getStringExtra(AddDescriptionActivity.EXTRA_DESCRIPTION)
+            val long = mCurrentLocation.longitude
+            val lat = mCurrentLocation.latitude
+            val dateTime =  System.currentTimeMillis().toDouble()
+            // creating geo phot and adding to db
+            val geoPhoto = GeoPhoto(null, currentPhotoPath, lat, long, dateTime, description)
+            mapsViewModel.insert(geoPhoto)
+        }
+    }
+
 }
